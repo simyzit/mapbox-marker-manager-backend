@@ -19,4 +19,8 @@ export class PinService {
     }
     return data;
   }
+
+  async getPins(user: UserDocument) {
+    return await this.pinModel.find({ userId: user._id });
+  }
 }
