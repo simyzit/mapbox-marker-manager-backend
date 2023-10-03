@@ -5,8 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDocument } from './entities/user.entity';
+import { User, UserDocument } from './entities/user.entity';
 import { EmailService } from 'src/email/email.service';
+import { Profile } from 'passport';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -41,6 +43,28 @@ export class UserService {
       name,
       email,
       verificationToken,
+    });
+  }
+
+  async createUser(
+    body: Pick<User, 'email' | 'password' | 'name'>,
+    password: string,
+    verificationToken: string,
+  ): Promise<UserDocument> {
+    return await this.userModel.create({
+      ...body,
+      password,
+      verificationToken,
+    });
+  }
+
+  async addUserSocialNetwork(profile: Profile) {
+    const password = v4();
+    return await this.userModel.create({
+      name: profile.name.givenName,
+      email: profile.emails[0].value,
+      password,
+      verify: true,
     });
   }
 

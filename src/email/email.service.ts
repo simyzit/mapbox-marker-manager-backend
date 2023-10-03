@@ -21,7 +21,7 @@ export class EmailService {
       subject: 'Welcome to Nice App! Confirm your Email',
       template: './confirmation-email',
       context: {
-        address: this.configService.get('adress'),
+        address: this.configService.get('address'),
         name,
         verificationToken,
       },

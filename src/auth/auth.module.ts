@@ -9,6 +9,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getJwtConfig } from '../config/jwt.config';
+import { GoogleStrategy } from './strategy/google.strategy';
+import { FacebookStrategy } from './strategy/facebook.strategy';
 
 @Module({
   imports: [
@@ -22,6 +24,6 @@ import { getJwtConfig } from '../config/jwt.config';
     EmailModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, FacebookStrategy],
 })
 export class AuthModule {}

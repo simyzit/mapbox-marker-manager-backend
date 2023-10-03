@@ -36,12 +36,11 @@ export class AuthService {
       throw new ConflictException('Email address is already registered');
     }
     const verificationToken = v4();
-    const hashPassword = await argon2.hash(password);
-    const data = await this.userModel.create({
-      ...body,
-      password: hashPassword,
+    const data = await this.userService.createUser(
+      body,
+      password,
       verificationToken,
-    });
+    );
     await this.emailService.sendEmailConfirmation({
       name,
       email,
@@ -78,6 +77,33 @@ export class AuthService {
       refreshToken: null,
     });
   }
+
+  async userAuthentication(user: UserDocument): Promise<{
+    name: string;
+    email: string;
+    accessToken: string;
+    refreshToken: string;
+    address: string;
+  }> {
+    const tokens = await this.generateTokens(user._id);
+
+    await this.userModel.findByIdAndUpdate(user._id, tokens);
+
+    return {
+      name: user.name,
+      email: user.email,
+      ...tokens,
+      address: this.configService.get('address'),
+    };
+  }
+
+  // async validateUser(user: Pick<User, 'email' | 'name'>) {
+  //   const { email, name } = user;
+  //   const user = this.userService.findUserByEmail(email);
+
+  //   if (user) {
+  //   }
+  // }
 
   async refreshToken(token: string) {
     const valid = await this.validToken(

@@ -2,11 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { HydratedDocument } from 'mongoose';
 
+import * as argon2 from 'argon2';
+
 export type UserDocument = HydratedDocument<User>;
 
 @Schema({ versionKey: false, timestamps: true })
 export class User {
-  @Prop({ required: true, match: /^[A-Za-z]+$/ })
+  @Prop({ required: true, minlength: 2 })
   name: string;
 
   @Prop({
@@ -33,3 +35,13 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre('save', async function (next) {
+  try {
+    const hashedPassword = await argon2.hash(this.password);
+    this.password = hashedPassword;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});

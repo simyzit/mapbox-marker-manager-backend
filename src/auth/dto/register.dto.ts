@@ -4,7 +4,6 @@ export class RegisterDto {
   @IsNotEmpty()
   @IsString()
   @Length(2, 30)
-  @Matches(/^[A-Za-z]+$/)
   name: string;
 
   @IsNotEmpty()
